@@ -1,2 +1,2 @@
 # JavaAlgorithmProblems
-Solution for algorithm problems with java
+Solutions for algorithm problems with java
