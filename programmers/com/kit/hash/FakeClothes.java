@@ -33,10 +33,23 @@ class FakeClothes {
 	 */
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void test1() {
+		String[][] clothes = {{"yellow_hat", "headgear"}, {"blue_sunglasses", "eyewear"}, {"green_turban", "headgear"}};
+		assertEquals(5, solution(clothes));
 	}
 	
+	@Test
+	void test2() {
+		String[][] clothes = {{"crow_mask", "face"}, {"blue_sunglasses", "face"}, {"smoky_makeup", "face"}};
+		assertEquals(3, solution(clothes));
+	}
+	/**
+	 * @param clothes	: 가지고 있는 옷의 배열(옷, 종류)
+	 * @return			: 조합할 수 있는 모든 옷의 경우의수
+	 * @algorithm
+	 * 각 종류별 옷의 개수+1(안입었을 경우)의 곱 - 1(아무것도 안입었을 경우)
+	 *  = ((a+1)*(b+1)*...*(k+1))-1
+	 */
 	public int solution(String[][] clothes) {
 		Map<String, Integer> clothesMap = new HashMap<>();
 		for(String[] wear: clothes) {
