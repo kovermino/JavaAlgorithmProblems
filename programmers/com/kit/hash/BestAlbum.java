@@ -2,13 +2,14 @@ package com.kit.hash;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -49,75 +50,93 @@ class BestAlbum {
 	 * @return			: 장르별 재생횟수가 가장 많은 2곡의 인덱스를 순서대로 담은 정수 배열
 	 */
 	public int[] solution(String[] genres, int[] plays) {
-		Map<String, SongsForGenre> playCount = new HashMap<>();
-		for(int i=0;i<genres.length;i++) {
-			SongsForGenre temp = playCount.getOrDefault(genres[i], new SongsForGenre());
-			temp.add(new Song(i, plays[i]));
-			playCount.put(genres[i], temp);
-		}
-		
-		Map<Integer, String> tree = new TreeMap<>();
-		for(String key: playCount.keySet()) {
-			tree.put(playCount.get(key).totalPlays, key);
-		}
-		
+		NavigableMap<Integer, Chart> genreMap = treeMapOrderByTotalPlays(getGenreMap(genres, plays));
 		List<Integer> result = new LinkedList<>();
-		for(int totalPlays : tree.keySet()) {
-			int[] temp = playCount.get(tree.get(totalPlays)).getTopTwo();
-			if(temp[1]!=-1) {
-				result.add(0, temp[1]);
-			}
-			if(temp[0]!=-1) {
-				result.add(0, temp[0]);
-			}
+		for(Integer totalPlays: genreMap.descendingKeySet()) {
+			Chart current = genreMap.get(totalPlays);
+			current.addTopTwo(result);
 		}
-		
 		return result.stream().mapToInt(i->i).toArray();
 	}
 	
-	class SongsForGenre{
+	/**
+	 * @param genreMap	: 장르별 차트가 들어있는 HashMap
+	 * @return			: 총 재생수 별 차트가 들어있는 TreeMap
+	 */
+	public NavigableMap<Integer, Chart> treeMapOrderByTotalPlays(Map<String, Chart> genreMap){
+		NavigableMap<Integer, Chart> tree = new TreeMap<>();
+		for(String genre: genreMap.keySet()) {
+			Chart current = genreMap.get(genre);
+			tree.put(current.totalPlays, current);
+		}
+		return tree;
+	}
+	
+	/**
+	 * @param genres	: 해당 인덱스에 해당하는 곡의 장르가 들어있는 문자열 배열
+	 * @param plays		: 해당 인덱스에 해당하는 곡의 재생 수가 들어있는 정수 배열
+	 * @return			: 장르별 차트가 들어있는 HashMap
+	 */
+	public Map<String, Chart> getGenreMap(String[] genres, int[] plays){
+		Map<String, Chart> genreMap = new HashMap<>();
+		for(int i=0;i<genres.length;i++) {
+			Chart currentChart = genreMap.getOrDefault(genres[i], new Chart(genres[i]));
+			currentChart.add(new Song(i, plays[i]));
+			genreMap.put(genres[i], currentChart);
+		}
+		return genreMap;
+	}
+	
+	/**
+	 * @author 윤종우
+	 * 장르별 총 재생 수와 곡들의 인덱스 Set
+	 */
+	public class Chart{
+		String genre;
 		Integer totalPlays;
-		List<Song> songs;
+		Set<Song> songs;
 		
-		public SongsForGenre() {
-			totalPlays = 0;
-			songs = new ArrayList<>();
+		public Chart(String genre) {
+			this.genre = genre;
+			this.totalPlays = 0;
+			songs = new TreeSet<Song>();
 		}
 		
 		public void add(Song s) {
-			totalPlays+=s.plays;
+			this.totalPlays += s.play;
 			songs.add(s);
 		}
 		
-		public int[] getTopTwo() {
-			int i1 = -1;
-			int i2 = -1;
-			if(songs.size()==0) {
-				return new int[] {-1, -1};
-			}else {
-				Collections.sort(songs);
-				i1 = songs.get(0).index;
-				i2 = songs.size()>1?songs.get(1).index:-1;
+		public void addTopTwo(List<Integer> list) {
+			int index = 0;
+			for(Song s: songs) {
+				list.add(s.id);
+				index++;
+				if(index==2) {
+					break;
+				}
 			}
-			return new int[] {i1, i2};
 		}
 	}
-	
-	class Song implements Comparable<Song>{
-		Integer index;
-		Integer plays;
+	/**
+	 * @author 윤종우
+	 * 재생수가 많은 것이 앞쪽으로, 재생수가 같다면 아이디가 낮은 것이 앞쪽으로 정렬
+	 */
+	public class Song implements Comparable<Song>{
+		Integer id;
+		Integer play;
 		
-		public Song(int index, int plays){
-			this.index = index;
-			this.plays = plays;
+		public Song(int id, int play) {
+			this.id = id;
+			this.play = play;
 		}
-		
+
 		@Override
 		public int compareTo(Song s) {
-			if(this.plays==s.plays) {
-				return this.index.compareTo(s.index);
+			if(this.play.equals(s.play)) {
+				return this.id.compareTo(s.id);
 			}
-			return s.plays.compareTo(this.plays);
+			return s.play.compareTo(this.play);
 		}
 	}
 	
