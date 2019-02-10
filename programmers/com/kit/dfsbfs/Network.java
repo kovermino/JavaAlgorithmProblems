@@ -86,6 +86,30 @@ class Network {
 		}
 	}
 	
+	public int reSolution(int n, int[][] computers) {
+		boolean[] visited = new boolean[n];
+		int count = 0;
+		for(int i=0;i<n;i++) {
+			if(!visited[i]) {
+				Stack<Integer> stack = new Stack<>();
+				stack.push(i);
+				while(!stack.isEmpty()) {
+					int current = stack.pop();
+					if(!visited[current]) {
+						visited[current] = true;
+						for(int j=0;j<n;j++) {
+							if(j!=current && computers[current][j]==1) {
+								stack.push(j);
+							}
+						}
+					}
+				}
+				count++;
+			}
+		}
+		return count;
+	}
+	
 	/**
 	 * 최초 솔루션(리팩토링 하기 전)
 	 * 
