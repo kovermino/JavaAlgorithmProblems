@@ -9,7 +9,10 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
-
+/**
+ * @author benny
+ * 검색어와 검색어가 페이지에서 등장하는 횟수를 매핑
+ */
 public class TermCounter {
 
 	private Map<String, Integer> termCountMap;

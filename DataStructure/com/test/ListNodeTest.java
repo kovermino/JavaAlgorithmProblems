@@ -2,6 +2,8 @@ package com.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.StringTokenizer;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,14 +26,14 @@ class ListNodeTest {
 		// list 맨 앞에 원소를 추가
 		ListNode node0 = new ListNode(0, node1);
 	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
-
+	
 	@Test
 	void test() {
-		fail("Not yet implemented");
+		StringTokenizer st = new StringTokenizer("(cool)dksl asdkjl dsa", " ()", true);
+		while(st.hasMoreTokens()) {
+			System.out.println(st.nextToken());
+		}
+		System.out.println();
 	}
 
 }
